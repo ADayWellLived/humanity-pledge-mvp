@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { COLORS, FONTS, ptp, todayStr } from '@/lib/constants';
-import { Plus, LogOut } from 'lucide-react';
 
 const C = COLORS;
 
@@ -59,7 +58,7 @@ export default function Dashboard() {
           <div style={styles.subtitle}>{user?.email}</div>
         </div>
         <button onClick={handleLogout} style={styles.logoutBtn}>
-          <LogOut size={16} /> Sign out
+          Sign out
         </button>
       </header>
 
@@ -67,7 +66,7 @@ export default function Dashboard() {
         <div style={styles.sectionHeader}>
           <h2 style={styles.heading}>Your pledges</h2>
           <button onClick={() => setShowForm(true)} style={styles.addBtn}>
-            <Plus size={16} /> New pledge
+            + New pledge
           </button>
         </div>
 
@@ -128,7 +127,7 @@ function PledgeCard({ pledge, onRefresh }) {
   return (
     <>
       <div style={styles.card}>
-        <button onClick={handleRemove} style={styles.removeBtn}>✕</button>
+        <button onClick={handleRemove} style={styles.removeBtn}>×</button>
         <h3 style={styles.pledgeText}>{pledge.text}</h3>
         <p style={styles.unit}>{pledge.unit}</p>
         <div style={styles.progress}>
@@ -242,10 +241,11 @@ function LogModal({ pledge, onClose, onSuccess }) {
     e.preventDefault();
     setLoading(true);
 
+    const { data: { user } } = await supabase.auth.getUser();
     const { error } = await supabase.from('log_entries').insert([
       {
         pledge_id: pledge.id,
-        user_id: (await supabase.auth.getUser()).data.user.id,
+        user_id: user.id,
         date: todayStr(),
         amount: parseInt(amount),
       },
